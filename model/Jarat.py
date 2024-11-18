@@ -13,6 +13,10 @@ class Jarat(ABC):
         self._seats = self._init_seats()
 
     @abstractmethod
+    def list_seats(self):
+        ...
+
+    @abstractmethod
     def book_seat(self, number: int):
         ...
 
@@ -58,5 +62,5 @@ class Jarat(ABC):
     def _init_seats(self):
         seats: list[Seat] = []
         for i in range(self._seats_count):
-            seats.append(Seat(i, False))
+            seats.append(Seat(i + 1, False))
         return seats

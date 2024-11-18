@@ -7,6 +7,19 @@ class NemzetkoziJarat(Jarat):
     def __init__(self, flight_id, destination, ticket_price, seat_count):
         super().__init__(flight_id, destination, ticket_price, seat_count)
 
+    def list_seats(self):
+        row_width = 6
+        column_width = 3
+        table = ""
+        for i, seat in enumerate(self.seats):
+            seat_number = i + 1
+            table += ("x" if seat.is_booked else str(seat_number)) + "\t"
+            if seat_number % column_width == 0:
+                table += "\t\t"
+            if seat_number % row_width == 0:
+                table += "\n"
+        print(table)
+
     def book_seat(self, number: int):
         index = number - 1
         if self._seats_free > 0:
