@@ -1,12 +1,15 @@
 from model.BelfoldiJarat import BelfoldiJarat
+from model.Jarat import Jarat
 from model.Legitarsasag import Legitarsasag
 from model.NemzetkoziJarat import NemzetkoziJarat
+from model.Seat import Seat
+
 
 class Repter:
     def __init__(self):
         self._user = "Vendég"
         self._airlines: list[Legitarsasag] = []
-        self._selected_flight = None
+        self._selected_flight: Jarat
         self._init_data()
 
     @property
@@ -41,17 +44,31 @@ class Repter:
 
     def list_flights(self):
         for airline in self._airlines:
+            print(f"{airline.name}:")
             for flight in airline.flights:
                 print(f"{flight.flight_id}.\t{flight.destination}\t\t\t{flight.ticket_price}€")
+
+    def list_seats(self, flight: Jarat):
+        row_width = 6
+        column_width = 3
+        table = ""
+        for i, seat in enumerate(flight.seats):
+            seat_number = i + 1
+            table += str(seat_number) + "\t"
+            if seat_number % column_width == 0:
+                table += "\t\t"
+            if seat_number % row_width == 0:
+                table += "\n"
+        print(table)
 
     def find_flight_by_id(self, flight_id: int):
         for airline in self._airlines:
             for flight in airline.flights:
                 if flight.flight_id == flight_id:
                     return flight
-        return False
+        return None
 
-    def choose_flight(self):
+    def choose_flight(self) -> Jarat:
         while True:
             print("Kérjük, válasszon járatot!")
             self.list_flights()
@@ -74,6 +91,22 @@ class Repter:
             elif proceed == "2":
                 return self.choose_flight()
 
+    def choose_seat(self, flight: Jarat) -> Seat:
+        selected_seat: Seat
+
+        while True:
+            print("Kérjük válasszon az elérhető helyek közül:")
+            self.list_seats(flight)
+            seat_number = int(input(""))
+            selected_seat = self._selected_flight.seats[seat_number]
+
+            if selected_seat:
+                self._selected_flight.book_seat(seat_number)
+                break
+            else:
+                print(f"A megadott ülőhely ({seat_number}) nem található.")
+
+        return selected_seat
 
     def start(self):
         print("╒═════════════════════════════════╗")
@@ -83,5 +116,6 @@ class Repter:
         self.set_user("Teszt")
 
         flight = self.choose_flight()
-        print(dir(flight))
+        seat = self.choose_seat(flight)
+        print(dir(seat))
 
