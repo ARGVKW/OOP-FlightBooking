@@ -54,7 +54,7 @@ class Repter:
             for flight in airline.flights:
                 print(f"{flight.flight_id}.\t{flight.destination}\t\t\t{flight.ticket_price}€")
 
-    def find_flight_by_id(self, flight_id: int):
+    def find_flight(self, flight_id: int):
         for airline in self._airlines:
             for flight in airline.flights:
                 if flight.flight_id == flight_id:
@@ -62,7 +62,7 @@ class Repter:
         return None
 
     def find_seat(self, flight_id: int, seat_number: int):
-        flight = self.find_flight_by_id(flight_id)
+        flight = self.find_flight(flight_id)
         if flight.flight_id == flight_id:
             for seat in flight.seats:
                 if seat.number == seat_number:
@@ -76,7 +76,7 @@ class Repter:
             flight_id = input("")
 
             try:
-                flight = self.find_flight_by_id(int(flight_id))
+                flight = self.find_flight(int(flight_id))
                 if flight:
                     self._selected_flight = flight
                     break
@@ -127,27 +127,38 @@ class Repter:
             elif proceed == "2":
                 return self.choose_seat(flight)
 
+    def main_menu(self):
+        while True:
+            print("Főmenü")
+            print("1. Jegyfoglalás")
+            print("2. Foglalásaim")
+            print("3. Jegyvisszaváltás")
+            print("4. Kilépés")
+            prompt = input("")
+
+            if prompt == "1":
+                flight = self.choose_flight()
+                seat = self.choose_seat(flight)
+
+                # list booked seats
+                print(f"{seat.number} számú ülőhely lefoglalva.")
+                print(dir(seat))
+
+                # pay booked seats
+
+                # list tickets
+            elif prompt == "2":
+                pass
+            elif prompt == "3":
+                pass
+            elif prompt == "4":
+                print("Viszontlátásra!")
+                break
+
     def start(self):
         print("╒═════════════════════════════════╗")
         print("│ Reptér CLI v1.0 (c) 2024 ARGVKW ║")
         print("└─────────────────────────────────╜")
 
         self.set_user("Vendég")
-
-        # Main menu
-        # 1. Book new flight
-        # 2. View my tickets
-        # 3. Redeem tickets
-        # 4. Exit
-
-        flight = self.choose_flight()
-        seat = self.choose_seat(flight)
-
-        # list booked seats
-        print(f"{seat.number} számú ülőhely lefoglalva.")
-        print(dir(seat))
-
-        # pay booked seats
-
-        # list tickets
-
+        self.main_menu()
