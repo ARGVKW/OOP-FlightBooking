@@ -13,7 +13,7 @@ class Jarat(ABC):
         self._seats = self._init_seats()
 
     @abstractmethod
-    def list_seats(self):
+    def list_seats(self, user_seats: [str]):
         ...
 
     @abstractmethod

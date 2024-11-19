@@ -1,4 +1,5 @@
 from model.Jarat import Jarat
+from utils.utils import GREEN, MAGENTA, RESET
 
 
 class BelfoldiJarat(Jarat):
@@ -6,13 +7,17 @@ class BelfoldiJarat(Jarat):
     def __init__(self, flight_id, destination, ticket_price, seat_count):
         super().__init__(flight_id, destination, ticket_price, seat_count)
 
-    def list_seats(self):
+    def list_seats(self, user_seats: [str]):
         row_width = 4
         column_width = 2
+        user_seat_numbers = list(map((lambda s: int(s.split("|")[1])),
+                                     list(filter((lambda f: int(f.split("|")[0]) == self.flight_id), user_seats)))
+                                 )
         table = ""
         for i, seat in enumerate(self.seats):
             seat_number = i + 1
-            table += ("x" if seat.is_booked else str(seat_number)) + "\t"
+            color = GREEN if seat_number in user_seat_numbers else MAGENTA
+            table += (f"{color}x{RESET}" if seat.is_booked else str(seat_number)) + "\t"
             if seat_number % column_width == 0:
                 table += "\t\t"
             if seat_number % row_width == 0:
