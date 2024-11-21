@@ -4,21 +4,33 @@ from functools import reduce
 
 class JegyFoglalas:
 
-    def __init__(self, user: str):
+    def __init__(self, user: str = None):
         self._user = user
         self._tickets: list[Ticket] = []
 
     @property
-    def user(self):
+    def user(self) -> str:
         return self._user
 
+    @user.setter
+    def user(self, user: str):
+        self._user = user
+
     @property
-    def tickets(self):
+    def tickets(self) -> list[Ticket]:
         return self._tickets
+
+    @property
+    def ticket_count(self) -> int:
+        return len(self._tickets)
 
     @property
     def total(self):
         return reduce((lambda sub_total, ticket: sub_total + ticket.price), self._tickets, 0)
+
+    @property
+    def total_outstanding(self):
+        return reduce((lambda sub_total, ticket: sub_total + (0 if ticket.is_paid else ticket.price)), self._tickets, 0)
 
     @property
     def seat_numbers(self):
@@ -33,16 +45,33 @@ class JegyFoglalas:
     def book_ticket(self, flight_id: int, seat_number: int, price: float, user: str):
         self._tickets.append(Ticket(flight_id, seat_number, price, user))
 
-    def redeem_ticket(self, flight_id, seat_number, user):
-        tickets = filter(
-            lambda ticket:
-                ticket.user == user and ticket.flight_id == flight_id and ticket.seat_number == seat_number,
+    def redeem_ticket(self, flight_id: int, seat_number: int):
+        redeemed = 0
+        ticket = filter(
+            lambda t: t.user == self.user and t.flight_id == flight_id and t.seat_number == seat_number,
             self._tickets
-        )
-        if tickets[0]:
-            self._tickets.remove(tickets[0])
+        )[0]
+        if ticket:
+            redeemed = ticket.redeem()
+            self._tickets.remove(ticket)
         else:
             print("A keresett jegy nem található.")
+        return redeemed
+
+    def pay_all(self) -> int:
+        payed = 0
+        for ticket in self._tickets:
+            if ticket.user == self.user and not ticket.is_paid:
+                payed += ticket.pay()
+        return payed
+
+    def redeem_all(self):
+        redeemed = 0
+        for ticket in self._tickets:
+            if ticket.user == self.user and ticket.is_paid:
+                redeemed += ticket.redeem()
+        self._tickets.clear()
+        return redeemed
 
     def find_user_tickets(self, user: str) -> list[Ticket]:
         tickets = filter(lambda ticket: ticket.user == user, self._tickets)

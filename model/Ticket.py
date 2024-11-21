@@ -1,3 +1,6 @@
+from view.colors import GREEN, RESET, AMBER
+
+
 class Ticket:
     def __init__(self, flight_id, seat_number, price, user):
         self._flight_id = flight_id
@@ -7,7 +10,7 @@ class Ticket:
         self._is_paid = False
 
     def __str__(self):
-        return f'Flight ID: {self.flight_id}\tSeat Nr.: {self.seat_number}\tPrice: {self.price}€'
+        return f"Járat: {self.flight_id}\tÜlés: {self.seat_number}\tJegyár: {self.price}€\t {(f"{GREEN}Fizetve{RESET}" if self.is_paid else f"{AMBER}Fizetendő{RESET}")}"
 
     @property
     def flight_id(self):

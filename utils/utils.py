@@ -1,12 +1,7 @@
 import os
 from os import system
 
-RED = '\033[91m'
-GREEN = '\033[92m'
-AMBER = '\033[93m'
-BLUE = '\033[94m'
-MAGENTA = '\033[1;3;35m'
-RESET = '\033[0m'
+from view.colors import GREEN
 
 IN_IDE_TERMINAL = False
 
@@ -15,6 +10,10 @@ try:
     IN_IDE_TERMINAL = True
 except Exception:
     IN_IDE_TERMINAL = False
+
+
+def prompt(value: str = ""):
+    return input(f"{value}{GREEN}")
 
 
 def clear_screen():

@@ -1,5 +1,5 @@
 from model.Jarat import Jarat
-from utils.utils import GREEN, MAGENTA, RESET
+from view.colors import GREEN, MAGENTA, RESET
 
 
 class BelfoldiJarat(Jarat):
@@ -20,7 +20,7 @@ class BelfoldiJarat(Jarat):
             table += (f"{color}x{RESET}" if seat.is_booked else str(seat_number)) + "\t"
             if seat_number % column_width == 0:
                 table += "\t\t"
-            if seat_number % row_width == 0:
+            if not seat_number == self._seats_count and seat_number % row_width == 0:
                 table += "\n"
         print(table)
 

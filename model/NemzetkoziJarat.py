@@ -1,6 +1,6 @@
 from model.Jarat import Jarat
 from model.Seat import Seat
-from utils.utils import RED, RESET, MAGENTA, GREEN
+from view.colors import RED, RESET, MAGENTA, GREEN
 
 
 class NemzetkoziJarat(Jarat):
@@ -21,7 +21,7 @@ class NemzetkoziJarat(Jarat):
             table += (f"{color}x{RESET}" if seat.is_booked else str(seat_number)) + "\t"
             if seat_number % column_width == 0:
                 table += "\t\t"
-            if seat_number % row_width == 0:
+            if not seat_number == self._seats_count and seat_number % row_width == 0:
                 table += "\n"
         print(table)
 
