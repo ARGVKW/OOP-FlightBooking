@@ -36,6 +36,12 @@ class JegyFoglalas:
     def seat_numbers(self):
         return list(map((lambda ticket: f"{ticket.flight_id}|{ticket.seat_number}"), self._tickets))
 
+    def get_seat_numbers_by_flight(self, flight_id: int):
+        if flight_id:
+            return list(
+                map((lambda ticket: ticket.seat_number),
+                    filter((lambda ticket: ticket.flight_id == flight_id), self._tickets)))
+
     def get_ticket(self, flight_id: int, seat_number: int) -> Ticket:
         try:
             return filter((lambda ticket: ticket.flight_id == flight_id and ticket.seat_number == seat_number), self._tickets)[0]

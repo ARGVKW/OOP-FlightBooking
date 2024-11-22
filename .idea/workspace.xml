@@ -5,18 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="09f08947-07f7-4ea4-a481-8910e8f929df" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/model/BelfoldiJarat.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/model/Jarat.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/model/Legitarsasag.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/model/NemzetkoziJarat.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/model/Seat.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control/Repter.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/Repter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/BelfoldiJarat.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/BelfoldiJarat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/Jarat.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/Jarat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/JegyFoglalas.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/JegyFoglalas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/NemzetkoziJarat.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/NemzetkoziJarat.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -33,18 +39,46 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Python.BelfoldiJarat.executor": "Run",
+    "Python.NemzetkoziJarat.executor": "Run",
+    "Python.Repter.executor": "Run",
+    "Python.Ticket.executor": "Run",
     "Python.activate_this.executor": "Run",
     "Python.main.executor": "Run",
+    "Python.utils.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
     "last_opened_file_path": "F:/_Gabor/_Suli/!Gdf/2024/OOP/beadando/FlightBooking/model",
-    "settings.editor.selected.configurable": "preferences.lookFeel"
+    "settings.editor.selected.configurable": "configurable.group.build"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="F:\_Gabor\_Suli\!Gdf\2024\OOP\beadando\FlightBooking\model" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" focusToolWindowBeforeRun="true" nameIsGenerated="true">
+      <module name="FlightBooking" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -54,6 +88,9 @@
     </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration>C:\Users\Gábor\AppData\Roaming\Subversion</configuration>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="09f08947-07f7-4ea4-a481-8910e8f929df" name="Changes" comment="" />
@@ -63,5 +100,16 @@
       <updated>1731362699677</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/control/Repter.py</url>
+          <line>236</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

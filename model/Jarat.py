@@ -4,9 +4,12 @@ from model.Seat import Seat
 
 
 class Jarat(ABC):
-    def __init__(self, flight_id: int, destination: str, ticket_price: float, seat_count: int):
+    def __init__(self, flight_id: int, terminal: str, destination: str, departure: str, arrival: str, ticket_price: float, seat_count: int):
         self._flight_id = flight_id
+        self._terminal = terminal
         self._destination = destination
+        self._departure = departure
+        self._arrival = arrival
         self._ticket_price = ticket_price
         self._seats_count = seat_count
         self._seats_free = seat_count
@@ -29,8 +32,20 @@ class Jarat(ABC):
         return self._flight_id
 
     @property
+    def terminal(self):
+        return self._terminal
+
+    @property
     def destination(self):
         return self._destination
+
+    @property
+    def departure(self):
+        return self._departure
+
+    @property
+    def arrival(self):
+        return self._arrival
 
     @property
     def ticket_price(self):

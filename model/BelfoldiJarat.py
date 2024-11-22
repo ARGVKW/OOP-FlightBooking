@@ -4,8 +4,8 @@ from view.colors import GREEN, MAGENTA, RESET
 
 class BelfoldiJarat(Jarat):
 
-    def __init__(self, flight_id, destination, ticket_price, seat_count):
-        super().__init__(flight_id, destination, ticket_price, seat_count)
+    def __init__(self, flight_id, terminal: str, destination: str, departure: str, arrival: str, ticket_price, seat_count):
+        super().__init__(flight_id, terminal, destination, departure, arrival, ticket_price, seat_count)
 
     def list_seats(self, user_seats: [str]):
         row_width = 4
