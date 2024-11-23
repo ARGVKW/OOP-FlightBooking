@@ -4,7 +4,9 @@ from model.Seat import Seat
 
 
 class Jarat(ABC):
-    def __init__(self, flight_id: int, terminal: str, destination: str, departure: str, arrival: str, ticket_price: float, seat_count: int):
+    def __init__(self, flight_id: int, terminal: str, destination: str, departure: str, arrival: str, \
+                 ticket_price: float, seat_count: int):
+        self._type: str
         self._flight_id = flight_id
         self._terminal = terminal
         self._destination = destination
@@ -26,6 +28,10 @@ class Jarat(ABC):
     @abstractmethod
     def cancel_seat(self, number: int):
         ...
+
+    @property
+    def type(self):
+        return self._type
 
     @property
     def flight_id(self):

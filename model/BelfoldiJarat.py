@@ -1,11 +1,12 @@
 from model.Jarat import Jarat
-from view.colors import GREEN, MAGENTA, RESET
+from view.colors import RESET, GRASS, PURPLE, BOLD, INVERSE
 
 
 class BelfoldiJarat(Jarat):
 
     def __init__(self, flight_id, terminal: str, destination: str, departure: str, arrival: str, ticket_price, seat_count):
         super().__init__(flight_id, terminal, destination, departure, arrival, ticket_price, seat_count)
+        self._type = "Belföldi járat"
 
     def list_seats(self, user_seats: [str]):
         row_width = 4
@@ -16,8 +17,8 @@ class BelfoldiJarat(Jarat):
         table = ""
         for i, seat in enumerate(self.seats):
             seat_number = i + 1
-            color = GREEN if seat_number in user_seat_numbers else MAGENTA
-            table += (f"{color}x{RESET}" if seat.is_booked else str(seat_number)) + "\t"
+            colour = GRASS if seat_number in user_seat_numbers else PURPLE
+            table += (f"{colour}{BOLD}{INVERSE}{seat_number: <2}{RESET}" if seat.is_booked else f"{seat_number}") + "\t"
             if seat_number % column_width == 0:
                 table += "\t\t"
             if not seat_number == self._seats_count and seat_number % row_width == 0:

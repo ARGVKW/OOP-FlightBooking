@@ -4,9 +4,14 @@ from functools import reduce
 
 class JegyFoglalas:
 
-    def __init__(self, user: str = None):
+    def __init__(self, flight_id: int, user: str):
+        self._flight_id = flight_id
         self._user = user
         self._tickets: list[Ticket] = []
+
+    @property
+    def flight_id(self):
+        return self._flight_id
 
     @property
     def user(self) -> str:
@@ -23,6 +28,10 @@ class JegyFoglalas:
     @property
     def ticket_count(self) -> int:
         return len(self._tickets)
+
+    @property
+    def is_paid(self):
+        return all(ticket.is_paid for ticket in self._tickets)
 
     @property
     def total(self):

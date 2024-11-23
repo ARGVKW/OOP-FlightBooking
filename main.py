@@ -1,4 +1,5 @@
 from control.Repter import Repter
 
-repter = Repter()
-repter.start()
+if __name__ == "__main__":
+    repter: Repter = Repter()
+    repter.start()
