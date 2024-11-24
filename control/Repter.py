@@ -44,7 +44,7 @@ class Repter:
         yesterday_date = today_date + timedelta(days=-1)
         yesterday = yesterday_date.strftime('%Y-%m-%d')
 
-        tomorrow_date = today_date + timedelta(days=-1)
+        tomorrow_date = today_date + timedelta(days=+1)
         tomorrow = tomorrow_date.strftime('%Y-%m-%d')
 
         days = [today, today, yesterday, yesterday, tomorrow, tomorrow]
@@ -79,6 +79,12 @@ class Repter:
         self._user = new_user
         print(f"{padding}{RESET}Üdvözöljük, {AMBER}{new_user}{RESET}!\n")
 
+    @staticmethod
+    def is_bookable(flight):
+        now = datetime.now()
+        departure = datetime.strptime(flight.departure, "%Y-%m-%d %H:%M")
+        return departure - now > timedelta(minutes=0)
+
     def list_airlines(self):
         for airline in self._airlines:
             print(airline.name)
@@ -86,8 +92,12 @@ class Repter:
     def list_flights(self):
         for airline in self._airlines:
             for flight in airline.flights:
-                print(
-                    f"{AMBER}{flight.flight_id}.{RESET} {airline.name}:\t{flight.destination: <20}Terminál {flight.terminal} {flight.departure: <18} {flight.ticket_price}€")
+                if self.is_bookable(flight):
+                    print(
+                        f"{AMBER}{flight.flight_id}.{RESET} {airline.name}:\t{flight.destination: <20}Terminál {flight.terminal} {flight.departure: <18} {flight.ticket_price}€")
+                else:
+                    print(
+                        f"{GREY}{flight.flight_id}. {airline.name}:\t{flight.destination: <20}Terminál {flight.terminal} {flight.departure: <18} {flight.ticket_price}€{RESET}")
 
     def find_flight(self, flight_id: int) -> tuple[Jarat | None, Legitarsasag | None]:
         for airline in self._airlines:
@@ -208,8 +218,11 @@ class Repter:
             try:
                 flight, _ = self.find_flight(int(flight_id))
                 if flight:
-                    self._selected_flight = flight
-                    return flight
+                    if self.is_bookable(flight):
+                        self._selected_flight = flight
+                        return flight
+                    else:
+                        return self.choose_flight(f"{RED}Ez a járat nem választható a megadott időponbtban.{RESET}")
                 else:
                     return self.choose_flight(f"{RED}Nem található járat a megadott azonosítóval.{RESET}")
 
