@@ -1,7 +1,7 @@
 import os
 from os import system
 
-from view.colors import GREEN
+from view.colors import GREEN, RESET
 
 IN_IDE_TERMINAL = False
 
@@ -12,8 +12,10 @@ except Exception:
     IN_IDE_TERMINAL = False
 
 
-def prompt(value: str = ""):
-    return input(f"{value}{GREEN}")
+def prompt(message="", padding=0):
+    p = " " * padding
+    msg = f"{p}{message}{RESET}\n" if message else ""
+    return input(f"{msg}{p}> {GREEN}")
 
 
 def clear_screen():

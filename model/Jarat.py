@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 
 from model.Seat import Seat
 
@@ -6,7 +7,7 @@ from model.Seat import Seat
 class Jarat(ABC):
     def __init__(self, flight_id: int, terminal: str, destination: str, departure: str, arrival: str, \
                  ticket_price: float, seat_count: int):
-        self._type: str
+        self._type: str | None = None
         self._flight_id = flight_id
         self._terminal = terminal
         self._destination = destination
@@ -52,6 +53,12 @@ class Jarat(ABC):
     @property
     def arrival(self):
         return self._arrival
+
+    @property
+    def flight_duration(self):
+        departure_time = datetime.strptime(self._departure, "%Y.%m.%d. %H:%M")
+        arrival_time = datetime.strptime(self._arrival, "%Y.%m.%d. %H:%M")
+        return int((arrival_time - departure_time).total_seconds() / 60 / 60)
 
     @property
     def ticket_price(self):
