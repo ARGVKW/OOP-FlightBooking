@@ -14,6 +14,13 @@ from view.colors import GREY, AMBER, RESET, GREEN, RED, WHITE, BLACK, BG_BLUE, B
 
 
 class Repter:
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super(Repter, cls).__new__(cls)
+        return cls._instance
+
     def __init__(self):
         self._user = ""
         self._airlines: list[Legitarsasag] = []
@@ -66,17 +73,15 @@ class Repter:
             date = days[i] + timedelta(hours=hours[i], minutes=minutes[i])
             return self.format_time(date, add_hours)
 
-        self._airlines.clear()
-
         self.airlines = Legitarsasag("Luft Panda", [
-            NemzetkoziJarat(1, "A", "Kuala Lumpur", create_time(0), create_time(0, 7), 1200.00, 120),
-            BelfoldiJarat(2, "A", "Debrecen", create_time(1), create_time(1, 1), 250.00, 60),
-            BelfoldiJarat(3, "A", "Szolnok", create_time(2), create_time(2, 1), 250.00, 60)
+            NemzetkoziJarat(random.randint(1, 9999), "A", "Kuala Lumpur", create_time(0), create_time(0, 7), 1200.00, 120),
+            BelfoldiJarat(random.randint(1, 9999), "A", "Debrecen", create_time(1), create_time(1, 1), 250.00, 60),
+            BelfoldiJarat(random.randint(1, 9999), "A", "Szolnok", create_time(2), create_time(2, 1), 250.00, 60)
         ])
         self.airlines = Legitarsasag("Brian Air", [
-            NemzetkoziJarat(4, "B", "Róma", f"{create_time(3)}", f"{create_time(3, 3)}", 1000.00, 120),
-            NemzetkoziJarat(5, "B", "Betlehem", f"{create_time(4)}", f"{create_time(4, 4)}", 1100.00, 120),
-            BelfoldiJarat(6, "B", "Szentkirályszabadja", f"{create_time(5)}", f"{create_time(5, 1)}", 250.00, 60)
+            NemzetkoziJarat(random.randint(1, 9999), "B", "Róma", f"{create_time(3)}", f"{create_time(3, 3)}", 1000.00, 120),
+            NemzetkoziJarat(random.randint(1, 9999), "B", "Betlehem", f"{create_time(4)}", f"{create_time(4, 4)}", 1100.00, 120),
+            BelfoldiJarat(random.randint(1, 9999), "B", "Szentkirályszabadja", f"{create_time(5)}", f"{create_time(5, 1)}", 250.00, 60)
         ])
 
     def _init_booking(self):
@@ -142,15 +147,16 @@ class Repter:
             print(airline.name)
 
     def list_flights(self):
-        for airline in self._airlines:
-            for flight in airline.flights:
-                flight_info = f"{airline.name}:\t{flight.destination: <20}Terminál {flight.terminal} {flight.departure: <18} {flight.flight_duration} óra {flight.ticket_price}€"
-                if self.is_bookable(flight):
-                    print(
-                        f"{AMBER}{flight.flight_id}.{RESET} {flight_info}")
-                else:
-                    print(
-                        f"{GREY}{flight.flight_id}. {flight_info}{RESET}")
+        for i, airline in enumerate(self._airlines):
+            if i > len(self._airlines) - 5:
+                for flight in airline.flights:
+                    flight_info = f"{airline.name}:\t{flight.destination: <20}Terminál {flight.terminal} {flight.departure: <18} {flight.flight_duration} óra {flight.ticket_price}€"
+                    if self.is_bookable(flight):
+                        print(
+                            f"{AMBER}{flight.flight_id}.{RESET} {flight_info}")
+                    else:
+                        print(
+                            f"{GREY}{flight.flight_id}. {flight_info}{RESET}")
 
     def find_flight(self, flight_id: int) -> tuple[Jarat | None, Legitarsasag | None]:
         for airline in self._airlines:
@@ -261,7 +267,7 @@ class Repter:
             print(f"{AMBER}Kérjük, válasszon járatot!{RESET}\n")
             self.list_flights()
 
-            print(f"{message}\nVissza (0) Járatválasztás (1-6) Időpontmódosítás (ÉÉÉÉ.HH.NN.)")
+            print(f"{message}\nVissza (0) Járatválasztás (1-9999) Időpontmódosítás (ÉÉÉÉ.HH.NN.)")
             _prompt = prompt()
 
             if _prompt == "0":
