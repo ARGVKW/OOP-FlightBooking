@@ -10,6 +10,8 @@ from model.Legitarsasag import Legitarsasag
 from model.NemzetkoziJarat import NemzetkoziJarat
 from model.Seat import Seat
 from utils.utils import clear_screen, resize_console, prompt
+from view.Header import Header
+from view.MainMenu import MainMenu
 from view.colors import GREY, AMBER, RESET, GREEN, RED, WHITE, BLACK, BG_BLUE, BOLD, BLUE, ITALIC, PURPLE, GRASS
 
 
@@ -46,6 +48,10 @@ class Repter:
     @airlines.setter
     def airlines(self, new_airline: Legitarsasag):
         self._airlines.append(new_airline)
+
+    @property
+    def bookings(self):
+        return self._bookings
 
     @property
     def selected_flight(self):
@@ -122,7 +128,7 @@ class Repter:
         try:
             travel_date = datetime.strptime(date, "%Y.%m.%d.")
 
-        except Exception:
+        except ValueError:
             error_msg = f"{RED}Érvénytelen dátum.{RESET}"
             error_hint = f"\n{padding}Használja a megadott formátumot. Pl.: {datetime.strftime(datetime.today(), "%Y.%m.%d.")}"
 
@@ -209,7 +215,7 @@ class Repter:
 
                 try:
                     index = int(_prompt)
-                except Exception:
+                except ValueError:
                     index = -1
 
                 if outstanding and _prompt.lower() == "f":
@@ -285,8 +291,7 @@ class Repter:
                 else:
                     return self.choose_flight(f"{RED}Nem található járat a megadott azonosítóval.{RESET}")
 
-            except Exception:
-
+            except ValueError:
                 result = self.update_travel_date(_prompt)
 
                 if type(result) is bool:
@@ -297,7 +302,6 @@ class Repter:
                 else:
                     clear_screen()
                     return self.choose_flight(result)
-                # return self.choose_flight(f"{RED}Hiba!{RESET} Kérjük csak egész számot adjon meg.")
 
     def choose_seat(self, message: str = ""):
         clear_screen()
@@ -395,38 +399,10 @@ class Repter:
                 return self.view_flight_bookings(current_booking_index, f"{RED}Érvénytelen karakter{RESET}")
 
     def main_menu(self):
-        border = BLUE
-        l = f"{border}│{RESET}"
-
         while True:
-            clear_screen()
+            menu = MainMenu(self._bookings).menu()
 
-            badge = f" ({GREEN}{len(self._bookings)}{RESET})"
-            my_bookings = f"{badge: <17}" if len(self._bookings) > 0 else ""
-
-            x = f"{GREY}[{RESET}x{GREY}]{RESET}"
-            padding = 30
-            p = " " * padding
-
-            print("\n" * 3)
-            print(f"{p}{border}┌─{BOLD} Reptér{PURPLE}♪ {RESET}{border}───────────────┐{RESET}")
-            print(f"{p}{border}│                         │{RESET}")
-            print(f"{p}{l} {AMBER} 1.{RESET} Jegyfoglalás        {l}")
-            print(f"{p}{border}│                         │{RESET}")
-            print(f"{p}{l} {AMBER} 2.{RESET} Foglalásaim{my_bookings: <8} {l}")
-            print(f"{p}{border}│                         │{RESET}")
-            print(f"{p}{l} {AMBER} 3.{RESET} Jegylemondás        {l}")
-            print(f"{p}{border}│                         │{RESET}")
-            if my_bookings:
-                print(f"{p}{l} {AMBER} 4.{RESET} Járatfoglaltság     {l}")
-                print(f"{p}{border}│                         │{RESET}")
-            print(f"{p}{l} {x} Kilépés             {l}")
-            print(f"{p}{border}│                         │{RESET}")
-            print(f"{p}{border}└────────────────── {ITALIC}v1.0 ─┘{RESET}")
-            _prompt = prompt("", padding)
-
-            if _prompt == "1":
-                clear_screen()
+            if menu == "1":
                 flight = self.choose_flight()
 
                 if not flight:
@@ -438,15 +414,15 @@ class Repter:
                 if len(self._bookings):
                     self.manage_bookings()
 
-            elif _prompt == "2":
+            elif menu == "2":
                 clear_screen()
                 self.manage_bookings()
-            elif _prompt == "3":
+            elif menu == "3":
                 clear_screen()
                 self.manage_bookings(True)
-            elif my_bookings and _prompt == "4":
+            elif len(self._bookings) and menu == "4":
                 self.view_flight_bookings()
-            elif _prompt == "X" or _prompt == "x":
+            elif menu == "X" or menu == "x":
                 clear_screen()
                 print("Viszontlátásra!")
                 sleep(1)
@@ -454,18 +430,7 @@ class Repter:
 
     def start(self):
         resize_console(88, 28)
-        clear_screen()
-
-        brd_l = f"{BG_BLUE}{WHITE}│{BG_BLUE}"
-        brd_r = f"{BG_BLUE}{WHITE}║{RESET}"
-        padding = " " * 24
-
-        print("\n" * 3)
-        print(f"{padding}{BG_BLUE}{WHITE}╒═════════════════════════════════╗{RESET}")
-        print(
-            f"{padding}{brd_l} {AMBER}{BOLD}Reptér CLI v1.0{RESET}{BG_BLUE}{BLACK} (c) 2024 {BOLD}ARGVKW {RESET}{brd_r}")
-        print(f"{padding}{BG_BLUE}{WHITE}└─────────────────────────────────╜{RESET}")
-        print("\n" * 5)
+        Header()
 
         self.set_user("Vendég")
         self.set_travel_date()
