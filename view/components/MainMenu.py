@@ -11,10 +11,11 @@ class MainMenu:
             cls._instance = super(MainMenu, cls).__new__(cls)
         return cls._instance
 
-    def __init__(self, bookings):
+    def __init__(self, bookings, on_input):
         self._bookings = bookings
+        self._render(on_input)
 
-    def menu(self):
+    def _render(self, on_input):
         clear_screen()
 
         border = BLUE
@@ -42,4 +43,8 @@ class MainMenu:
         print(f"{p}{l} {x} Kilépés             {l}")
         print(f"{p}{border}│                         │{RESET}")
         print(f"{p}{border}└────────────────── {ITALIC}v1.0 ─┘{RESET}")
-        return prompt("", padding + 1)
+
+        _prompt = prompt("", padding + 1)
+
+        while on_input(_prompt):
+            self._render(on_input)

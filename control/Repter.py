@@ -10,9 +10,9 @@ from model.Legitarsasag import Legitarsasag
 from model.NemzetkoziJarat import NemzetkoziJarat
 from model.Seat import Seat
 from utils.utils import clear_screen, resize_console, prompt
-from view.Header import Header
-from view.MainMenu import MainMenu
-from view.colors import GREY, AMBER, RESET, GREEN, RED, WHITE, BLACK, BG_BLUE, BOLD, BLUE, ITALIC, PURPLE, GRASS
+from view.components.Header import Header
+from view.components.MainMenu import MainMenu
+from view.colors import GREY, AMBER, RESET, GREEN, RED, WHITE, BOLD, PURPLE, GRASS
 
 
 class Repter:
@@ -277,7 +277,7 @@ class Repter:
             _prompt = prompt()
 
             if _prompt == "0":
-                self.main_menu()
+                self.show_main_menu()
                 return
 
             try:
@@ -398,35 +398,36 @@ class Repter:
             else:
                 return self.view_flight_bookings(current_booking_index, f"{RED}Érvénytelen karakter{RESET}")
 
-    def main_menu(self):
-        while True:
-            menu = MainMenu(self._bookings).menu()
+    def show_main_menu(self):
+        MainMenu(bookings=self._bookings, on_input=self.handle_menu_input)
 
-            if menu == "1":
-                flight = self.choose_flight()
+    def handle_menu_input(self, menu):
+        if menu == "1":
+            flight = self.choose_flight()
 
-                if not flight:
-                    continue
+            if not flight:
+                return True
 
-                self.choose_seat()
-                clear_screen()
+            self.choose_seat()
+            clear_screen()
 
-                if len(self._bookings):
-                    self.manage_bookings()
-
-            elif menu == "2":
-                clear_screen()
+            if len(self._bookings):
                 self.manage_bookings()
-            elif menu == "3":
-                clear_screen()
-                self.manage_bookings(True)
-            elif len(self._bookings) and menu == "4":
-                self.view_flight_bookings()
-            elif menu == "X" or menu == "x":
-                clear_screen()
-                print("Viszontlátásra!")
-                sleep(1)
-                quit()
+        elif menu == "2":
+            clear_screen()
+            self.manage_bookings()
+        elif menu == "3":
+            clear_screen()
+            self.manage_bookings(True)
+        elif len(self._bookings) and menu == "4":
+            self.view_flight_bookings()
+        elif menu == "X" or menu == "x":
+            clear_screen()
+            print("Viszontlátásra!")
+            sleep(1)
+            quit()
+
+        return True
 
     def start(self):
         resize_console(88, 28)
@@ -436,4 +437,4 @@ class Repter:
         self.set_travel_date()
         self._init_data()
         self._init_booking()
-        self.main_menu()
+        self.show_main_menu()

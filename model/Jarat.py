@@ -5,7 +5,7 @@ from model.Seat import Seat
 
 
 class Jarat(ABC):
-    def __init__(self, flight_id: int, terminal: str, destination: str, departure: str, arrival: str, \
+    def __init__(self, flight_id: int, terminal: str, destination: str, departure: str, arrival: str,
                  ticket_price: float, seat_count: int):
         self._type: str | None = None
         self._flight_id = flight_id
