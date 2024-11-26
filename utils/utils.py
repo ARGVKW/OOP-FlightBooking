@@ -30,6 +30,3 @@ def resize_console(cols: int, lines: int):
         system(f"mode con: cols={cols} lines={lines}")
     except Exception:
         return
-
-
-

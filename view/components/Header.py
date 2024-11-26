@@ -1,5 +1,5 @@
 from utils.utils import clear_screen
-from view.colors import BG_BLUE, WHITE, RESET, AMBER, BOLD, BLACK
+from view.colors import BG_BLUE, WHITE, RESET, AMBER, BOLD, BLACK, BLUE, PURPLE, MAGENTA
 
 
 class Header:
@@ -18,8 +18,8 @@ class Header:
         padding = " " * 24
 
         print("\n" * 3)
-        print(f"{padding}{BG_BLUE}{WHITE}╒═════════════════════════════════╗{RESET}")
+        print(f"{padding}{BG_BLUE}{WHITE}╒═══════════════════════════════════╗{RESET}")
         print(
-            f"{padding}{brd_l} {AMBER}{BOLD}Reptér CLI v1.0{RESET}{BG_BLUE}{BLACK} (c) 2024 {BOLD}ARGVKW {RESET}{brd_r}")
-        print(f"{padding}{BG_BLUE}{WHITE}└─────────────────────────────────╜{RESET}")
+            f"{padding}{brd_l}{RESET}{PURPLE} {BOLD}Reptér{MAGENTA}♪{PURPLE} CLI v1.0 {RESET}{BG_BLUE}{BLACK} (c) 2024 {BOLD}ARGVKW {RESET}{brd_r}")
+        print(f"{padding}{BG_BLUE}{WHITE}└───────────────────────────────────╜{RESET}")
         print("\n" * 5)

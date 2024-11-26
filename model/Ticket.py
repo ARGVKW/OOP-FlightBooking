@@ -10,7 +10,7 @@ class Ticket:
         self._is_paid = False
 
     def __str__(self):
-        return f"Járat: {self.flight_id}\tÜlés: {self.seat_number}\tJegyár: {self.price}€\t {(f"{GREEN}Fizetve{RESET}" if self.is_paid else f"{AMBER}Fizetendő{RESET}")}"
+        return f"Járat: {self.flight_id}\tÜlés: {self.seat_number}\tJegyár: {self.price}0€\t {(f"{GREEN}Fizetve{RESET}" if self.is_paid else f"{AMBER}Fizetendő{RESET}")}"
 
     @property
     def flight_id(self):

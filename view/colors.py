@@ -13,18 +13,20 @@ CYAN = color(96)
 BLACK = color(97)
 WHITE = color(99)
 GREY = color(90)
-RESET = color(0)
+RESET = color("00")
 
+BG_BLACK = color(47)
 BG_GREEN = color(42)
 BG_AMBER = color(43)
 BG_BLUE = color(44)
+BG_MAGENTA = color(45)
 
-BOLD = color(1)
-ITALIC = color(3)
+BOLD = color("01")
+ITALIC = color("03")
 BOLD_ITALIC = color("1;3")
-UNDERLINE = color(4)
-INVERSE = color(7)
-STRIKE = color(9)
+UNDERLINE = color("04")
+INVERSE = color("07")
+STRIKE = color("09")
 
 
 

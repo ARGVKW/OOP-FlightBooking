@@ -1,5 +1,5 @@
 from model.Jarat import Jarat
-from view.colors import RESET, GRASS, PURPLE, BOLD, INVERSE
+from view.colors import RESET, GRASS, PURPLE, BOLD, INVERSE, RED
 
 
 class BelfoldiJarat(Jarat):
@@ -18,12 +18,14 @@ class BelfoldiJarat(Jarat):
         for i, seat in enumerate(self.seats):
             seat_number = i + 1
             colour = GRASS if seat_number in user_seat_numbers else PURPLE
-            table += (f"{colour}{BOLD}{INVERSE}{seat_number: <2}{RESET}" if seat.is_booked else f"{seat_number}") + "\t"
+            span = "   " if seat_number < 100 else "  "
+            seat_badge = f"{colour}{BOLD}{INVERSE}{seat_number: <2}{RESET}"
+            table += f"{seat_badge}{span}" if seat.is_booked else f"{seat_number: <5}"
             if seat_number % column_width == 0:
-                table += "\t\t"
+                table += "        "
             if not seat_number == self._seats_count and seat_number % row_width == 0:
                 table += "\n"
-        print(table)
+        return table
 
     def book_seat(self, number: int):
         index = number - 1
@@ -31,7 +33,7 @@ class BelfoldiJarat(Jarat):
             self._seats[index].book()
             self._seats_free -= 1
         else:
-            print("Hiba! Ez a belföldi járat megtelt.")
+            return f"{RED}Hiba! Ez a belföldi járat megtelt."
 
     def cancel_seat(self, number: int):
         index = number - 1
@@ -39,4 +41,4 @@ class BelfoldiJarat(Jarat):
             self._seats[index].cancel()
             self._seats_free += 1
         else:
-            print("Hiba, a művelet nem hajtható végre.")
+            raise ValueError(f"{RED}Hiba, a művelet nem hajtható végre.{RESET}")

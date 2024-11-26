@@ -10,6 +10,7 @@ from model.Legitarsasag import Legitarsasag
 from model.NemzetkoziJarat import NemzetkoziJarat
 from model.Seat import Seat
 from utils.utils import clear_screen, resize_console, prompt
+from view.components.Page import Page
 from view.components.Header import Header
 from view.components.MainMenu import MainMenu
 from view.colors import GREY, AMBER, RESET, GREEN, RED, WHITE, BOLD, PURPLE, GRASS
@@ -153,16 +154,16 @@ class Repter:
             print(airline.name)
 
     def list_flights(self):
+        flights = ""
         for i, airline in enumerate(self._airlines):
             if i > len(self._airlines) - 5:
                 for flight in airline.flights:
-                    flight_info = f"{airline.name}:\t{flight.destination: <20}Terminál {flight.terminal} {flight.departure: <18} {flight.flight_duration} óra {flight.ticket_price}€"
+                    flight_info = f"{f"{airline.name}:": <15}{flight.destination: <20}Terminál {flight.terminal} {flight.departure: <18} {flight.flight_duration} óra {flight.ticket_price}0€"
                     if self.is_bookable(flight):
-                        print(
-                            f"{AMBER}{flight.flight_id}.{RESET} {flight_info}")
+                        flights += f"{AMBER}{f"{flight.flight_id}.": <6}{RESET}{flight_info}\n"
                     else:
-                        print(
-                            f"{GREY}{flight.flight_id}. {flight_info}{RESET}")
+                        flights += f"{GREY}{f"{flight.flight_id}.": <6}{flight_info}{RESET}\n"
+        return flights
 
     def find_flight(self, flight_id: int) -> tuple[Jarat | None, Legitarsasag | None]:
         for airline in self._airlines:
@@ -182,36 +183,42 @@ class Repter:
     def manage_bookings(self, is_redemption: bool = False, message: str = ""):
         padding = " " * 56
         padding_msg = " " * 52
+        title = "Jegylemondás" if is_redemption else "Foglalásaim"
 
         while True:
             my_bookings: list[JegyFoglalas] = list(filter((lambda b: b.user == self._user), self._bookings))
             my_booking_count = len(my_bookings)
 
             if my_booking_count > 0:
-                print(f"{AMBER}Az Ön által leadott foglalások:{RESET}")
+                content = f"{AMBER}Az Ön által leadott foglalások:{RESET}\n\n"
 
                 for i, booking in enumerate(my_bookings):
                     ticket_count = len(booking.tickets)
                     if ticket_count:
                         flight, airline = self.find_flight(booking.flight_id)
                         flight_info = f"{AMBER}{i + 1}.{RESET} {f"{airline.name}:": <12} {flight.destination: <20} {flight.departure: <18}"
-                        ticket_info = f"{f"Jegy: {GREEN}{ticket_count}{RESET} db.": <12} {booking.total}€"
+                        ticket_info = f"{f"Jegy: {GREEN}{ticket_count}{RESET} db.": <12} {booking.total}0€"
                         ticket_payment = f"{GREEN}Fizetve{RESET}" if booking.is_paid else f"{AMBER}Fizetendő{RESET}"
-                        print(f"{flight_info} {ticket_info: <30} {ticket_payment}")
+                        content += f"{flight_info} {ticket_info: <30} {ticket_payment}\n"
 
                 total = reduce((lambda sub_total, b: sub_total + b.total), my_bookings, 0)
                 outstanding = reduce((lambda sub_total, b: sub_total + b.total_outstanding), my_bookings, 0)
 
-                print(f"\n{padding}{"Összesen:": <12} {WHITE}{total}{RESET}€")
+                footer = f"{padding}{"Összesen:": <12} {WHITE}{total}{RESET}0€\n"
                 if outstanding:
-                    print(f"{padding}{"Fizetendő:": <12} {AMBER}{outstanding}{RESET}€")
-                print(f"{message}\n" if message else "")
+                    footer += f"{padding}{"Fizetendő:": <12} {AMBER}{outstanding}0{RESET}€\n"
+
+                footer += f"{message}\n" if message else ""
 
                 payment_label = f"Fizetés (F) " if outstanding and not is_redemption else ""
                 redemption_index = f"1-{my_booking_count}" if my_booking_count > 1 else "L"
                 redeem_all_label = " Összes lemondása (L)" if is_redemption and my_booking_count > 1 else ""
                 redemption_label = f"Lemondás ({redemption_index})" if is_redemption else ""
-                _prompt = input(f"{payment_label}{redemption_label}{redeem_all_label} Folytatás (Enter) ")
+
+                footer += f"{payment_label}{redemption_label}{redeem_all_label} Folytatás (Enter) "
+
+                Page(title, content, footer)
+                _prompt = prompt()
 
                 try:
                     index = int(_prompt)
@@ -225,7 +232,7 @@ class Repter:
                     for my_booking in my_bookings:
                         payed_amount += my_booking.pay_all()
 
-                    payed_msg = f"{padding_msg}Sikeres fizetés! {GREEN}{payed_amount}{RESET}€" if payed_amount else ""
+                    payed_msg = f"{padding_msg}Sikeres fizetés! {GREEN}{payed_amount}0{RESET}€" if payed_amount else ""
                     return self.manage_bookings(is_redemption, payed_msg)
 
                 elif is_redemption and total and 0 < index <= my_booking_count:
@@ -239,7 +246,7 @@ class Repter:
                     redemption_amount += my_booking.redeem_all()
                     self._bookings.remove(my_booking)
 
-                    redemption_msg = f" Visszatérítés: {RESET}{redemption_amount}€" if redemption_amount else f"{RESET} (Nem történt fizetés)"
+                    redemption_msg = f" Visszatérítés: {RESET}{redemption_amount}0€" if redemption_amount else f"{RESET} (Nem történt fizetés)"
                     cancellation_msg = f"{AMBER}Sikeres lemondás!{redemption_msg}"
 
                     return self.manage_bookings(is_redemption, cancellation_msg)
@@ -255,25 +262,28 @@ class Repter:
                         redemption_amount += my_booking.redeem_all()
                         self._bookings.remove(my_booking)
 
-                    redemption_msg = f" Visszatérítés: {RESET}{redemption_amount}€" if redemption_amount else f"{RESET} (Nem történt fizetés)"
+                    redemption_msg = f" Visszatérítés: {RESET}{redemption_amount}0€" if redemption_amount else f"{RESET} (Nem történt fizetés)"
                     cancellation_msg = f"{AMBER}Sikeres lemondás!{redemption_msg}"
 
                     return self.manage_bookings(is_redemption, cancellation_msg)
                 else:
                     return
             else:
-                print(message)
-                print(f"{RESET}Nem található foglalás.")
-                input("Vissza (Enter)")
+                msg = f"{message}\n" if message else ""
+                content = f"{RESET}{BOLD}{GREY}Nem található foglalás.{RESET}"
+                Page(title, content, f"{msg}Vissza (Enter)")
+                prompt()
                 return
 
     def choose_flight(self, message: str = "") -> Jarat | None:
         clear_screen()
         while True:
-            print(f"{AMBER}Kérjük, válasszon járatot!{RESET}\n")
-            self.list_flights()
+            header = f"{AMBER}Kérjük, válasszon járatot!{RESET}\n\n"
+            flight_list = self.list_flights()
+            msg = f"{message}\n" if message else ""
+            footer = f"{msg}Vissza (0) Járatválasztás (1-9999) Időpontmódosítás (ÉÉÉÉ.HH.NN.)"
 
-            print(f"{message}\nVissza (0) Járatválasztás (1-9999) Időpontmódosítás (ÉÉÉÉ.HH.NN.)")
+            Page(title="Jegyfoglalás", content=f"{header}{flight_list}", footer=f"{footer}")
             _prompt = prompt()
 
             if _prompt == "0":
@@ -317,18 +327,19 @@ class Repter:
 
         seats_available = f"{AMBER}Ülőhelyek:{RESET} {GREEN}{selected_flight.seats_free}{RESET}/{selected_flight.seat_count} szabad"
         flight_time = f"{AMBER}Menetidő:{RESET} {selected_flight.flight_duration} óra"
-        ticket_price = f"{AMBER}Jegyár:{RESET} {selected_flight.ticket_price}€"
+        ticket_price = f"{AMBER}Jegyár:{RESET} {selected_flight.ticket_price}0€"
 
-        print(f"{AMBER}{selected_flight.type}:{RESET} {self.selected_flight}")
-        print(f"{seats_available} {flight_time} {ticket_price}")
-        print(f"{GRASS}■{RESET} saját foglalás   {PURPLE}■{RESET} egyéb foglalások\n")
+        flight_details = f"{AMBER}{selected_flight.type}:{RESET} {self.selected_flight}\n"
+        flight_details += f"{seats_available} {flight_time} {ticket_price}\n"
+        flight_details += f"{GRASS}■{RESET} saját foglalás   {PURPLE}■{RESET} egyéb foglalások\n\n"
 
         while True:
-            selected_flight.list_seats(flight_booking.seat_numbers)
+            seat_list = selected_flight.list_seats(flight_booking.seat_numbers)
+            footer_msg = f"{message}\n" if message else f"{AMBER}Kérjük válasszon az elérhető helyek közül{RESET}\n"
+            prompt_message = f"Vissza (0) {book_label} Folytatás (Enter)" if has_booked_seat else f"Vissza (0) {book_label}"
 
-            print(f"\n{message}" if message else f"\n{AMBER}Kérjük válasszon az elérhető helyek közül{RESET}")
-            _prompt = prompt(
-                f"Vissza (0) {book_label} Folytatás (Enter)" if has_booked_seat else f"Vissza (0) {book_label}").strip()
+            Page(title="Ülőhelyválasztás", content=f"{flight_details}{seat_list}", footer=f"{footer_msg}{prompt_message}")
+            _prompt = prompt()
 
             if _prompt == "0":
                 self.choose_flight()
@@ -353,8 +364,8 @@ class Repter:
                         if not self._bookings.count(flight_booking):
                             self._bookings.append(flight_booking)
 
-                        print_message = (f"{AMBER}A lefoglalt ülőhely: {RESET}{GREEN}{selected_seat.number}.{RESET}"
-                                         + f"\t{self._selected_flight.ticket_price}€{RESET}")
+                        print_message = (f"{AMBER}A lefoglalt ülőhely: {RESET}{GREEN}{f"{selected_seat.number}.": <5}{RESET}"
+                                         + f"{self._selected_flight.ticket_price}0€{RESET}")
                         break
                 else:
                     print_message = f"{AMBER}A megadott ülőhely ({RESET}{seat_number}{AMBER}) nem található.{RESET}"
@@ -371,7 +382,7 @@ class Repter:
         my_bookings_count = len(self._bookings)
 
         if my_bookings_count == 0:
-            print(f"{RESET} Nem található foglalás")
+            Page(title="Járatfoglaltság", content=f"{RESET} Nem található foglalás")
             input("Vissza (Enter)")
 
         while True:
@@ -379,16 +390,18 @@ class Repter:
             current_flight, _ = self.find_flight(current_flight_id)
             seats_available = f"{AMBER}Ülőhelyek:{RESET} {GREEN}{current_flight.seats_free}{RESET}/{current_flight.seat_count} szabad"
             flight_time = f"{AMBER}Menetidő:{RESET} {current_flight.flight_duration} óra"
-            ticket_price = f"{AMBER}Jegyár:{RESET} {current_flight.ticket_price}€"
+            ticket_price = f"{AMBER}Jegyár:{RESET} {current_flight.ticket_price}0€"
 
-            print(f"{AMBER}{current_flight.type}:{RESET} {self.flight_details(current_flight_id)}")
-            print(f"{seats_available} {flight_time} {ticket_price}")
-            print(f"{GRASS}■{RESET} saját foglalás   {PURPLE}■{RESET} egyéb foglalások\n")
+            flight_details = f"{AMBER}{current_flight.type}:{RESET} {self.flight_details(current_flight_id)}\n"
+            flight_details += f"{seats_available} {flight_time} {ticket_price}\n"
+            flight_details += f"{GRASS}■{RESET} saját foglalás   {PURPLE}■{RESET} egyéb foglalások\n\n"
 
-            current_flight.list_seats(self._bookings[current_booking_index].seat_numbers)
+            seat_list = current_flight.list_seats(self._bookings[current_booking_index].seat_numbers)
+            footer_msg = f"{message}\n" if message else ""
+            prompt_message = f"Vissza (0) Következő (Enter)" if my_bookings_count > 1 else f"Vissza (Enter)"
 
-            _prompt = input(
-                f"\n{"Vissza (0)  Következő (Enter)" if my_bookings_count > 1 else "Vissza (Enter)"} {message}")
+            Page(title="Járatfoglaltság", content=f"{flight_details}{seat_list}", footer=f"{footer_msg}{prompt_message}")
+            _prompt = prompt()
 
             if _prompt == "0" or (_prompt == "" and my_bookings_count == 1):
                 return
@@ -430,7 +443,7 @@ class Repter:
         return True
 
     def start(self):
-        resize_console(88, 28)
+        resize_console(90, 32)
         Header()
 
         self.set_user("Vendég")
