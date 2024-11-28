@@ -1,4 +1,4 @@
-from utils.utils import prompt
+from utils.utils import prompt, get_padding
 from utils.utils import clear_screen
 from view.colors import GREEN, RESET, GREY, BLUE, BOLD, PURPLE, AMBER, ITALIC, MAGENTA
 
@@ -25,7 +25,7 @@ class MainMenu:
         my_bookings = f"{badge: <18}" if len(self._bookings) > 0 else ""
 
         x = f"{GREY}[{RESET}x{GREY}]{RESET}"
-        padding = 30
+        padding = get_padding(27)
         p = " " * padding
 
         print("\n" * 3)

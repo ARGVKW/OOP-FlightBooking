@@ -5,16 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="09f08947-07f7-4ea4-a481-8910e8f929df" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/view/components/Page.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/model/User.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/control/Repter.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/Repter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/BelfoldiJarat.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/BelfoldiJarat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/NemzetkoziJarat.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/NemzetkoziJarat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/JegyFoglalas.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/JegyFoglalas.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/model/Ticket.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/Ticket.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/colors.py" beforeDir="false" afterPath="$PROJECT_DIR$/view/colors.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/components/Header.py" beforeDir="false" afterPath="$PROJECT_DIR$/view/components/Header.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/components/MainMenu.py" beforeDir="false" afterPath="$PROJECT_DIR$/view/components/MainMenu.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

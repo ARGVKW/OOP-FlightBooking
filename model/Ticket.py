@@ -1,8 +1,9 @@
+from model.User import User
 from view.colors import GREEN, RESET, AMBER
 
 
 class Ticket:
-    def __init__(self, flight_id, seat_number, price, user):
+    def __init__(self, flight_id: int, seat_number: int, price: float, user: User):
         self._flight_id = flight_id
         self._seat_number = seat_number
         self._price = price
@@ -10,7 +11,11 @@ class Ticket:
         self._is_paid = False
 
     def __str__(self):
-        return f"Járat: {self.flight_id}\tÜlés: {self.seat_number}\tJegyár: {self.price}0€\t {(f"{GREEN}Fizetve{RESET}" if self.is_paid else f"{AMBER}Fizetendő{RESET}")}"
+        payment_status = f"{GREEN}Fizetve{RESET}" if self.is_paid else f"{AMBER}Fizetendő{RESET}"
+        flight_info = f"Járat: {self.flight_id}."
+        seat_info = f"Ülés: {self.seat_number}"
+        ticket_price = f"Jegyár: {self.price}0€"
+        return f"{flight_info: <6}{seat_info: 10}{ticket_price: 16}{payment_status}"
 
     @property
     def flight_id(self):

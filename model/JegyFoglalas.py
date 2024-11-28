@@ -1,10 +1,12 @@
 from model.Ticket import Ticket
 from functools import reduce
 
+from model.User import User
+
 
 class JegyFoglalas:
 
-    def __init__(self, flight_id: int, user: str):
+    def __init__(self, flight_id: int, user: User):
         self._flight_id = flight_id
         self._user = user
         self._tickets: list[Ticket] = []
@@ -14,11 +16,11 @@ class JegyFoglalas:
         return self._flight_id
 
     @property
-    def user(self) -> str:
+    def user(self) -> User:
         return self._user
 
     @user.setter
-    def user(self, user: str):
+    def user(self, user: User):
         self._user = user
 
     @property
@@ -43,7 +45,7 @@ class JegyFoglalas:
 
     @property
     def seat_numbers(self):
-        return list(map((lambda ticket: f"{ticket.flight_id}|{ticket.seat_number}"), self._tickets))
+        return list(map((lambda ticket: ticket.seat_number), self._tickets))
 
     def get_seat_numbers_by_flight(self, flight_id: int):
         if flight_id:

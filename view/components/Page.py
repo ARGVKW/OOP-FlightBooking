@@ -29,10 +29,12 @@ class Page:
         print(
             f"{padding}{self.border_color}┌─{BOLD}{PURPLE} {self._title} {RESET}{self.border_color}{border}─┐{RESET}")
 
-    def content(self, content=""):
+    def content(self):
+        offset = 5
         rows = str.splitlines(f"\n{self._content}")
         row_count = len(rows)
-        for i in range(self.height - row_count - 7):
+        footer_br_count = self._footer.count("\n") + 1 if self._footer else 0
+        for i in range(self.height - row_count - footer_br_count - offset):
             rows.append(" ")
         for row in rows:
             self.body_row(row)
@@ -45,9 +47,7 @@ class Page:
     def body_row(self, row):
         padding = " " * self.padding
         specials = str.count(row, "\033[") * 5
-        # specials = len(re.findall(r"\033\[[*.?]m", row)) * 5
         content_width = self.width - 4 + specials
-        fill_width = " " * (content_width - len(row))
         print(f"{padding}{self.border_color}│{RESET} {row: <{content_width}}{self.border_color} │{RESET}")
 
     def footer(self):

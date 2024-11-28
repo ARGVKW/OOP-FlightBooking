@@ -8,16 +8,14 @@ class BelfoldiJarat(Jarat):
         super().__init__(flight_id, terminal, destination, departure, arrival, ticket_price, seat_count)
         self._type = "Belföldi járat"
 
-    def list_seats(self, user_seats: [str]):
+    def list_seats(self, user_seats: [int]):
         row_width = 4
         column_width = 2
-        user_seat_numbers = list(map((lambda s: int(s.split("|")[1])),
-                                     list(filter((lambda f: int(f.split("|")[0]) == self.flight_id), user_seats)))
-                                 )
+
         table = ""
         for i, seat in enumerate(self.seats):
             seat_number = i + 1
-            colour = GRASS if seat_number in user_seat_numbers else PURPLE
+            colour = GRASS if seat_number in user_seats else PURPLE
             span = "   " if seat_number < 100 else "  "
             seat_badge = f"{colour}{BOLD}{INVERSE}{seat_number: <2}{RESET}"
             table += f"{seat_badge}{span}" if seat.is_booked else f"{seat_number: <5}"
