@@ -44,15 +44,18 @@ class JegyFoglalas:
     def seat_numbers(self):
         return list(map((lambda ticket: ticket.seat_number), self._tickets))
 
+    def get_ticket(self, flight_id: int, seat_number: int) -> Ticket | None:
+        return next(filter((lambda ticket: ticket.flight_id == flight_id and ticket.seat_number == seat_number), self._tickets), None)
+
     def book_ticket(self, flight_id: int, seat_number: int, price: float, user: User):
         self._tickets.append(Ticket(flight_id, seat_number, price, user))
 
     def redeem_ticket(self, flight_id: int, seat_number: int):
         redeemed = 0
-        ticket = filter(
+        ticket = next(filter(
             lambda t: t.user == self.user and t.flight_id == flight_id and t.seat_number == seat_number,
             self._tickets
-        )[0]
+        ), None)
         if ticket:
             redeemed += ticket.redeem()
             self._tickets.remove(ticket)

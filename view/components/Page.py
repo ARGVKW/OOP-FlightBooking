@@ -1,5 +1,5 @@
 from view.colors import BLUE, BOLD, PURPLE, RESET, color
-from utils.utils import clear_screen, prompt
+from utils.utils import clear_screen, prompt, get_console_size
 
 
 class Page:
@@ -17,8 +17,10 @@ class Page:
         self._on_input = on_input
         self.padding = 0
         self.border_color = BLUE
-        self.width = 90
-        self.height = 32
+
+        columns, lines = get_console_size()
+        self.width = columns
+        self.height = lines
         self._render()
 
     def header(self):

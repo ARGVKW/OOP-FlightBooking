@@ -369,6 +369,7 @@ class Repter:
     A felhasználó által kiválasztott ülőhelyek zöld kiemeléssel más lefoglalt ülőhelyek lila színnel vannak jelölve.
     
     Vissza lehet térni az előző képernyőre újabb járatot választani. Folytatáskor a Foglalásaim képernyőre visz.
+    Téves foglalást x + ülésszám megadásával lehet törölni.
     
     """
     def choose_seat(self, message: str = ""):
@@ -383,7 +384,7 @@ class Repter:
         
         flight_overview = self.flight_overview(selected_flight, flight_booking)
         
-        book_label = f"Foglalás (1-{selected_flight.seat_count})"
+        book_label = f"Foglalás (1-{selected_flight.seat_count}) Törlés(x + 1-{selected_flight.seat_count})"
         footer_msg = f"{message}\n" if message else f"{AMBER}Kérjük válasszon az elérhető helyek közül{RESET}\n"
         prompt_message = f"Vissza (0) {book_label} Folytatás (Enter)" if has_booked_seat else f"Vissza (0) {book_label}"
 
@@ -399,18 +400,38 @@ class Repter:
             if _prompt == "" and has_booked_seat:
                 return
 
+            if _prompt.lower().startswith("x"):
+                is_deletion = True
+                _prompt = _prompt.replace("x", "").replace("X", "").replace("+", "").strip()
+            else:
+                is_deletion = False
+
             try:
                 seat_number = int(_prompt)
                 selected_seat = self.find_seat(selected_flight.flight_id, seat_number)
 
                 if selected_seat:
-                    if selected_seat.is_booked:
+                    if is_deletion:
+                        if selected_seat.is_booked:
+                            if flight_booking.get_ticket(selected_flight.flight_id, seat_number):
+                                self._selected_flight.cancel_seat(seat_number)
+                                flight_booking.redeem_ticket(selected_flight.flight_id, seat_number)
+                                if len(flight_booking.tickets) == 0:
+                                    self._bookings.remove(flight_booking)
+                                print_message = f"{AMBER}A megadott ülőhely ({RESET}{seat_number}{AMBER}) foglalása törölve.{RESET}"
+                            else:
+                                print_message = f"{RED}Más által foglalt ülőhely ({RESET}{seat_number}{RED}) nem törölhető.{RESET}"
+                            break
+                        else:
+                            print_message = f"{AMBER}A megadott ülőhely ({RESET}{seat_number}{AMBER}) már szabad.{RESET}"
+                            break
+
+                    elif selected_seat.is_booked:
                         print_message = f"{AMBER}A megadott ülőhely ({RESET}{seat_number}{AMBER}) már foglalt.{RESET}"
                         break
                     else:
                         self._selected_flight.book_seat(seat_number)
-                        flight_booking.book_ticket(selected_flight.flight_id, seat_number, selected_flight.ticket_price,
-                                                   self._user)
+                        flight_booking.book_ticket(selected_flight.flight_id, seat_number, selected_flight.ticket_price, self._user)
 
                         if not self._bookings.count(flight_booking):
                             self._bookings.append(flight_booking)
@@ -423,7 +444,8 @@ class Repter:
                 else:
                     print_message = f"{AMBER}A megadott ülőhely ({RESET}{seat_number}{AMBER}) nem található.{RESET}"
                     break
-            except Exception:
+
+            except ValueError:
                 print_message = f"{RED}Hiba!{RESET} Kérjük csak egész számot adjon meg, és a számjegyek között ne legyen szóköz."
                 break
 
