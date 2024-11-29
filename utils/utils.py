@@ -1,4 +1,5 @@
 import os
+from datetime import datetime, timedelta
 from os import system
 
 from view.colors import GREEN, RESET
@@ -47,3 +48,8 @@ def get_console_size() -> os.terminal_size:
 def get_padding(target_width: int):
     columns, _ = get_console_size()
     return int(columns / 2 - target_width / 2)
+
+
+def format_time(date: datetime, add_hours=0):
+    _date = date + timedelta(hours=add_hours)
+    return datetime.strftime(_date, "%Y.%m.%d. %H:%M")

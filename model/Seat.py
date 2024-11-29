@@ -17,6 +17,3 @@ class Seat:
 
     def cancel(self):
         self._is_booked = False
-
-    def get(self):
-        return self

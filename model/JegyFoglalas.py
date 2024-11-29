@@ -2,6 +2,7 @@ from model.Ticket import Ticket
 from functools import reduce
 
 from model.User import User
+from view.colors import RED, RESET
 
 
 class JegyFoglalas:
@@ -28,10 +29,6 @@ class JegyFoglalas:
         return self._tickets
 
     @property
-    def ticket_count(self) -> int:
-        return len(self._tickets)
-
-    @property
     def is_paid(self):
         return all(ticket.is_paid for ticket in self._tickets)
 
@@ -47,19 +44,7 @@ class JegyFoglalas:
     def seat_numbers(self):
         return list(map((lambda ticket: ticket.seat_number), self._tickets))
 
-    def get_seat_numbers_by_flight(self, flight_id: int):
-        if flight_id:
-            return list(
-                map((lambda ticket: ticket.seat_number),
-                    filter((lambda ticket: ticket.flight_id == flight_id), self._tickets)))
-
-    def get_ticket(self, flight_id: int, seat_number: int) -> Ticket:
-        try:
-            return filter((lambda ticket: ticket.flight_id == flight_id and ticket.seat_number == seat_number), self._tickets)[0]
-        except Exception as e:
-            print(e)
-
-    def book_ticket(self, flight_id: int, seat_number: int, price: float, user: str):
+    def book_ticket(self, flight_id: int, seat_number: int, price: float, user: User):
         self._tickets.append(Ticket(flight_id, seat_number, price, user))
 
     def redeem_ticket(self, flight_id: int, seat_number: int):
@@ -69,10 +54,10 @@ class JegyFoglalas:
             self._tickets
         )[0]
         if ticket:
-            redeemed = ticket.redeem()
+            redeemed += ticket.redeem()
             self._tickets.remove(ticket)
         else:
-            print("A keresett jegy nem található.")
+            return f"{RED}A keresett jegy ({RESET}{seat_number}{RED}) nem található.{RESET}"
         return redeemed
 
     def pay_all(self) -> int:
@@ -89,7 +74,3 @@ class JegyFoglalas:
                 redeemed += ticket.redeem()
         self._tickets.clear()
         return redeemed
-
-    def find_user_tickets(self, user: str) -> list[Ticket]:
-        tickets = filter(lambda ticket: ticket.user == user, self._tickets)
-        return list(tickets)

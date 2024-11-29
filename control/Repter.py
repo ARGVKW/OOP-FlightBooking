@@ -11,7 +11,7 @@ from model.NemzetkoziJarat import NemzetkoziJarat
 from model.Seat import Seat
 from model.User import User
 from utils.utils import clear_screen, resize_console, prompt, IN_OS_TERMINAL, get_console_size, WIDTH, HEIGHT, \
-    get_padding
+    get_padding, format_time
 from view.components.Page import Page
 from view.components.Header import Header
 from view.components.MainMenu import MainMenu
@@ -33,17 +33,6 @@ class Repter:
         self._selected_flight: Jarat | None = None
         self._travel_date = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
 
-    @staticmethod
-    def is_bookable(flight):
-        now = datetime.now()
-        departure = datetime.strptime(flight.departure, "%Y.%m.%d. %H:%M")
-        return departure - now > timedelta(minutes=0)
-
-    @staticmethod
-    def format_time(date: datetime, add_hours=0):
-        _date = date + timedelta(hours=add_hours)
-        return datetime.strftime(_date, "%Y.%m.%d. %H:%M")
-
     @property
     def airlines(self):
         return self._airlines
@@ -56,14 +45,14 @@ class Repter:
     def bookings(self):
         return self._bookings
 
-    @property
-    def selected_flight(self):
-        return self.flight_details(self._selected_flight.flight_id)
+    """
+    Két légitársaságot és ezekhez 3-3 járatot ad hozzá a légitársaságok listájához.
 
-    def flight_details(self, flight_id):
-        flight, airline = self.find_flight(flight_id)
-        return f"{GREEN}{flight.flight_id}. {airline.name} - {flight.destination} {RESET}[{GREEN}{flight.departure}{RESET}]"
-
+    Randomizált járatidőpontokat generál a kiválasztott dátumhoz, és ahhoz képest +/- egy nappal. 
+    Egy nappal korábbra azért, hogy tesztelhetők legyenek a már nem választható járatok, amikor a kiválasztott dátum a mai nap.
+    
+    Induláskor és új indulási időpont megadásakor fut le.
+    """
     def _init_data(self):
         today = self._travel_date
         yesterday = today + timedelta(days=-1)
@@ -80,23 +69,31 @@ class Repter:
 
         def create_time(i: int, add_hours=0):
             date = days[i] + timedelta(hours=hours[i], minutes=minutes[i])
-            return self.format_time(date, add_hours)
+            return format_time(date, add_hours)
+        
+        def random_id():
+            return random.randint(1, 9999)
 
         self.airlines = Legitarsasag("Luft Panda", [
-            NemzetkoziJarat(random.randint(1, 9999), "A", "Kuala Lumpur", create_time(0), create_time(0, 7), 1200.00,
-                            120),
-            BelfoldiJarat(random.randint(1, 9999), "A", "Debrecen", create_time(1), create_time(1, 1), 250.00, 60),
-            BelfoldiJarat(random.randint(1, 9999), "A", "Szolnok", create_time(2), create_time(2, 1), 250.00, 60)
+            NemzetkoziJarat(random_id(), "A", "Kuala Lumpur", create_time(0), create_time(0, 7), 1200.00, 120),
+            BelfoldiJarat(random_id(), "A", "Debrecen", create_time(1), create_time(1, 1), 250.00, 60),
+            BelfoldiJarat(random_id(), "A", "Szolnok", create_time(2), create_time(2, 1), 250.00, 60)
         ])
         self.airlines = Legitarsasag("Brian Air", [
-            NemzetkoziJarat(random.randint(1, 9999), "B", "Róma", f"{create_time(3)}", f"{create_time(3, 3)}", 1000.00,
-                            120),
-            NemzetkoziJarat(random.randint(1, 9999), "B", "Betlehem", f"{create_time(4)}", f"{create_time(4, 4)}",
-                            1100.00, 120),
-            BelfoldiJarat(random.randint(1, 9999), "B", "Szentkirályszabadja", f"{create_time(5)}",
-                          f"{create_time(5, 1)}", 250.00, 60)
+            NemzetkoziJarat(random_id(), "B", "Róma", create_time(3), create_time(3, 3), 1000.00, 120),
+            NemzetkoziJarat(random_id(), "B", "Betlehem", create_time(4), create_time(4, 4), 1100.00, 120),
+            BelfoldiJarat(random_id(), "B", "Szentkirályszabadja", create_time(5), create_time(5, 1), 250.00, 60)
         ])
 
+    """
+    Lefoglal járatonként 6 ülőhelyet, amik a felhasználó számára nem lesznek kiválaszthatók, sem lemondhatók.
+
+    Az Ülőhelyválasztás és Járatfoglaltság nézetben az itt lefoglalt ülőhelyek a felhasználó által kiválasztottól 
+    eltérő színnel (lila) vannak jelölve. A Foglalásaim és Jegylemondás menüpontok alatt csak a felhasználó 
+    foglalásai látszanak.
+    
+    Induláskor és új indulási időpont megadásakor fut le.
+    """
     def _init_booking(self):
         for airline in self._airlines:
             for flight in airline.flights:
@@ -104,32 +101,9 @@ class Repter:
                     if seat.number % (len(flight.seats) / 6) == 0:
                         flight.book_seat(seat.number)
 
-    def set_user(self, user: str):
-        columns, _ = get_console_size()
-        padding = " " * get_padding(36)
-        icon = f"{BLUE}☺{RESET}" if IN_OS_TERMINAL else "🙎‍♂️"
-        _user = input(
-            f"{padding}{AMBER}Adjon meg egy felhasználónevet!{RESET}\n{padding}Vagy folytatás vendégként (Enter)\n{padding}{icon} {GREEN}")
-        new_user = _user or user
-        self._user = User(new_user)
-
-        print(f"{padding}{RESET}{BOLD}Üdvözöljük, {AMBER}{new_user}{RESET}!\n")
-
-    def set_travel_date(self, message=""):
-        p = get_padding(36)
-        padding = " " * p
-
-        while True:
-            msg = f"\n{RESET}{padding}{message}{GREEN}" if message else ""
-            date = prompt(f"{AMBER}Utazás időpontja (ÉÉÉÉ.HH.NN.){RESET}\n{padding}Vagy a mai nap (Enter){msg}", p)
-            result = self.update_travel_date(date, padding)
-
-            if type(result) is bool:
-                return
-            else:
-                clear_screen()
-                return self.set_travel_date(result)
-
+    """
+    Utazási időpont frissítése és validációja
+    """
     def update_travel_date(self, date: str, padding=""):
         if date == "":
             return False
@@ -158,10 +132,9 @@ class Repter:
         self._travel_date = travel_date
         return True
 
-    def list_airlines(self):
-        for airline in self._airlines:
-            print(airline.name)
-
+    """
+    Listát generál az aktuális járatokról. A nem kiválasztható járatok szürke színnel jelennek meg.
+    """
     def list_flights(self):
         flights = ""
         for i, airline in enumerate(self._airlines):
@@ -170,7 +143,7 @@ class Repter:
                     airline_info = f"{airline.name}:"
                     flight_info = f"{airline_info: <15}{flight.destination: <20}Terminál {flight.terminal} {flight.departure: <18} {flight.flight_duration} óra {flight.ticket_price}0€"
                     flight_id = f"{flight.flight_id}."
-                    if self.is_bookable(flight):
+                    if flight.is_bookable:
                         flights += f"{AMBER}{flight_id: <6}{RESET}{flight_info}\n"
                     else:
                         flights += f"{GREY}{flight_id: <6}{flight_info}{RESET}\n"
@@ -191,12 +164,43 @@ class Repter:
                     return seat
         return None
 
+    """ Egysoros járatinformáció """
+    def flight_details(self, flight_id):
+        flight, airline = self.find_flight(flight_id)
+        return f"{GREEN}{flight.flight_id}. {airline.name} - {flight.destination} {RESET}[{GREEN}{flight.departure}{RESET}]"
+
+    """ Részletes járatinformáció, ülőhelyek és foglaltság megjelenítésével """
+    def flight_overview(self, flight: Jarat, flight_booking: JegyFoglalas):
+        seats_available = f"{AMBER}Ülőhelyek:{RESET} {GREEN}{flight.seats_free}{RESET}/{flight.seat_count} szabad"
+        flight_time = f"{AMBER}Menetidő:{RESET} {flight.flight_duration} óra"
+        ticket_price = f"{AMBER}Jegyár:{RESET} {flight.ticket_price}0€"
+
+        flight_details = f"{AMBER}{flight.type}:{RESET} {self.flight_details(flight.flight_id)}\n"
+        flight_details += f"{seats_available} {flight_time} {ticket_price}\n"
+        flight_details += f"{GRASS}■{RESET} saját foglalás   {PURPLE}■{RESET} egyéb foglalások\n \n"
+
+        seat_list = flight.list_seats(flight_booking.seat_numbers)
+
+        return f"{flight_details}{seat_list}"
+
+    """
+    A Foglalásaim és Jegylemondás menüpontokat kezeli.
+
+    Foglalásaim: a felhasználó meglévő foglalásainak listázása és kifizetése.
+
+    Jegylemondás:  a felhasználó meglévő foglalásainak listázása és lemondása.
+    Több foglalás esetén a lemondás történhet egyesével a foglalás számának megadásával,
+    vagy összesítve az "L" karakter beírásával.
+    
+    Lemondáskor kiírásra kerül a visszatérítendő összeg a már kifizetett jegyek után.
+    """
     def manage_bookings(self, is_redemption: bool = False, message: str = ""):
         padding = " " * 55
         padding_msg = " " * 51
         title = "Jegylemondás" if is_redemption else "Foglalásaim"
 
         while True:
+            """ Csak a felhasználó saját foglalásai lesznek listázva """
             my_bookings: list[JegyFoglalas] = list(filter((lambda b: b.user == self._user), self._bookings))
             my_booking_count = len(my_bookings)
 
@@ -251,7 +255,11 @@ class Repter:
                     payed_msg = f"{padding_msg}Sikeres fizetés! {GREEN}{payed_amount}0{RESET}€" if payed_amount else ""
                     return self.manage_bookings(is_redemption, payed_msg)
 
-                elif is_redemption and total and 0 < index <= my_booking_count:
+                elif is_redemption and total and index > 0:
+
+                    if index > my_booking_count:
+                        return self.manage_bookings(is_redemption, f"{RED}Önnek nincs foglalása {RESET}{index}.{RED} sorszámmal.{RESET}")
+
                     clear_screen()
                     redemption_amount = 0
 
@@ -300,6 +308,17 @@ class Repter:
                 Page(title, content, f"{msg}Vissza (Enter)", on_input)
                 return
 
+    """
+    Járatválasztás és időpontmódosítás
+    
+    Kilistázza az aktuális járatokat. A nem kiválasztható járatok szürke színnel jelennek meg, számuk megadásakor 
+    hibaüzenet jelenik meg. Elérhető járat kiválasztásakor az Ülőhelyválasztás képernyőre visz.
+    Időpontmódosítás esetén újrarajzolja a jelenlegi képernyőt az új járatokat hozzáadva.
+    (Helytakarékosság miatt, csak az utolsó két alkalommal megadott járatok látszanak.)
+    
+    Hibás bevitel validálva van. Az időpont validációt az update_travel_date függvény biztosítja.
+
+    """
     def choose_flight(self, message: str = "") -> Jarat | None:
         clear_screen()
         while True:
@@ -318,7 +337,7 @@ class Repter:
             try:
                 flight, _ = self.find_flight(int(_prompt))
                 if flight:
-                    if self.is_bookable(flight):
+                    if flight.is_bookable:
                         self._selected_flight = flight
                         return flight
                     else:
@@ -342,33 +361,35 @@ class Repter:
                     clear_screen()
                     return self.choose_flight(result)
 
+    """
+    Ülőhelyválasztás
+    
+    Részletes járatinformáció megjelenítése a fejlécben, alatta pedig az elérhető ülések listázása a járat típusának 
+    megfelelő elrendezésben. Belfőldi járat: 2 x 2 oszlop 60 ülés. Nemzetközi járat: 2 x 3 oszlop 120 ülés.
+    A felhasználó által kiválasztott ülőhelyek zöld kiemeléssel más lefoglalt ülőhelyek lila színnel vannak jelölve.
+    
+    Vissza lehet térni az előző képernyőre újabb járatot választani. Folytatáskor a Foglalásaim képernyőre visz.
+    
+    """
     def choose_seat(self, message: str = ""):
         clear_screen()
         selected_seat: Seat
         selected_flight = self._selected_flight
         print_message = ""
 
-        prev_booking = list(
-            filter(lambda b: b.flight_id == selected_flight.flight_id and b.user == self._user, self._bookings))
-        flight_booking = (prev_booking and prev_booking[0] or JegyFoglalas(selected_flight.flight_id, self._user))
+        existing_booking = next(filter(lambda b: b.flight_id == selected_flight.flight_id and b.user == self._user, self._bookings), None)
+        flight_booking = existing_booking or JegyFoglalas(selected_flight.flight_id, self._user)
         has_booked_seat = len(flight_booking.seat_numbers) > 0
+        
+        flight_overview = self.flight_overview(selected_flight, flight_booking)
+        
         book_label = f"Foglalás (1-{selected_flight.seat_count})"
+        footer_msg = f"{message}\n" if message else f"{AMBER}Kérjük válasszon az elérhető helyek közül{RESET}\n"
+        prompt_message = f"Vissza (0) {book_label} Folytatás (Enter)" if has_booked_seat else f"Vissza (0) {book_label}"
 
-        seats_available = f"{AMBER}Ülőhelyek:{RESET} {GREEN}{selected_flight.seats_free}{RESET}/{selected_flight.seat_count} szabad"
-        flight_time = f"{AMBER}Menetidő:{RESET} {selected_flight.flight_duration} óra"
-        ticket_price = f"{AMBER}Jegyár:{RESET} {selected_flight.ticket_price}0€"
-
-        flight_details = f"{AMBER}{selected_flight.type}:{RESET} {self.selected_flight}\n"
-        flight_details += f"{seats_available} {flight_time} {ticket_price}\n"
-        flight_details += f"{GRASS}■{RESET} saját foglalás   {PURPLE}■{RESET} egyéb foglalások\n \n"
+        Page(title="Ülőhelyválasztás", content=flight_overview, footer=f"{footer_msg}{prompt_message}")
 
         while True:
-            seat_list = selected_flight.list_seats(flight_booking.seat_numbers)
-            footer_msg = f"{message}\n" if message else f"{AMBER}Kérjük válasszon az elérhető helyek közül{RESET}\n"
-            prompt_message = f"Vissza (0) {book_label} Folytatás (Enter)" if has_booked_seat else f"Vissza (0) {book_label}"
-
-            Page(title="Ülőhelyválasztás", content=f"{flight_details}{seat_list}",
-                 footer=f"{footer_msg}{prompt_message}")
             _prompt = prompt()
 
             if _prompt == "0":
@@ -408,6 +429,14 @@ class Repter:
 
         return self.choose_seat(print_message)
 
+    """
+    Járatfoglaltság áttekintő nézet (csak akkor látszik, ha van felhasználói foglalás)
+    
+    Az Ülőhelyválasztáshoz hasonló nézet részletes járatadatokkal és az ülőhelyek listázásával, de ez csak a felhasználó
+    által foglalt járatot mutatja. Több lefoglalt járat esetén léptetni lehet a járatok között. 
+    Csak áttekintő nézet, foglalás itt nem történik. 
+    
+    """
     def view_flight_bookings(self, current_booking_index=0, message=""):
         clear_screen()
 
@@ -418,22 +447,15 @@ class Repter:
             input("Vissza (Enter)")
 
         while True:
-            current_flight_id = self._bookings[current_booking_index].flight_id
+            current_booking = self._bookings[current_booking_index]
+            current_flight_id = current_booking.flight_id
             current_flight, _ = self.find_flight(current_flight_id)
-            seats_available = f"{AMBER}Ülőhelyek:{RESET} {GREEN}{current_flight.seats_free}{RESET}/{current_flight.seat_count} szabad"
-            flight_time = f"{AMBER}Menetidő:{RESET} {current_flight.flight_duration} óra"
-            ticket_price = f"{AMBER}Jegyár:{RESET} {current_flight.ticket_price}0€"
 
-            flight_details = f"{AMBER}{current_flight.type}:{RESET} {self.flight_details(current_flight_id)}\n"
-            flight_details += f"{seats_available} {flight_time} {ticket_price}\n"
-            flight_details += f"{GRASS}■{RESET} saját foglalás   {PURPLE}■{RESET} egyéb foglalások\n \n"
-
-            seat_list = current_flight.list_seats(self._bookings[current_booking_index].seat_numbers)
+            flight_overview = self.flight_overview(current_flight, current_booking)
             footer_msg = f"{message}\n" if message else ""
             prompt_message = f"Vissza (0) Következő (Enter)" if my_bookings_count > 1 else f"Vissza (Enter)"
 
-            Page(title="Járatfoglaltság", content=f"{flight_details}{seat_list}",
-                 footer=f"{footer_msg}{prompt_message}")
+            Page(title="Járatfoglaltság", content=flight_overview, footer=f"{footer_msg}{prompt_message}")
             _prompt = prompt()
 
             if _prompt == "0" or (_prompt == "" and my_bookings_count == 1):
@@ -443,6 +465,44 @@ class Repter:
                 return self.view_flight_bookings(next_booking_index)
             else:
                 return self.view_flight_bookings(current_booking_index, f"{RED}Érvénytelen karakter{RESET}")
+
+    """
+    Felhasználónév bevitele a kezdőképernyőn
+    """
+    def set_user(self, user_name: str):
+        columns, _ = get_console_size()
+        padding = " " * get_padding(36)
+
+        if not self._user:
+            icon = f"{BLUE}☺{RESET}" if IN_OS_TERMINAL else "🙎‍♂️"
+            new_user_name = input(
+                f"{padding}{AMBER}Adjon meg egy felhasználónevet!{RESET}\n{padding}Vagy folytatás vendégként (Enter)\n{padding}{icon} {GREEN}")
+            self._user = User(new_user_name or user_name)
+
+        print(f"{padding}{RESET}{BOLD}Üdvözöljük, {AMBER}{self._user.name}{RESET}!\n")
+
+    """
+    Utazási időpont bevitele a kezdőképernyőn
+    """
+    def set_travel_date(self, message=""):
+        p = get_padding(36)
+        padding = " " * p
+
+        while True:
+            msg = f"\n{RESET}{padding}{message}{GREEN}" if message else ""
+            date = prompt(f"{AMBER}Utazás időpontja (ÉÉÉÉ.HH.NN.){RESET}\n{padding}Vagy a mai nap (Enter){msg}", p)
+            result = self.update_travel_date(date, padding)
+
+            if type(result) is bool:
+                return
+            else:
+                clear_screen()
+                return self.show_start_screen(result)
+
+    def show_start_screen(self, message=""):
+        Header()
+        self.set_user("Vendég")
+        self.set_travel_date(message)
 
     def show_main_menu(self):
         MainMenu(bookings=self._bookings, on_input=self.handle_menu_input)
@@ -474,11 +534,6 @@ class Repter:
             quit()
 
         return True
-
-    def show_start_screen(self):
-        Header()
-        self.set_user("Vendég")
-        self.set_travel_date()
 
     def start(self):
         resize_console(WIDTH, HEIGHT)

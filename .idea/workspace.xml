@@ -5,11 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="09f08947-07f7-4ea4-a481-8910e8f929df" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/model/User.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/control/Repter.py" beforeDir="false" afterPath="$PROJECT_DIR$/control/Repter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/JegyFoglalas.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/JegyFoglalas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/Ticket.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/Ticket.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/start.sh" beforeDir="false" afterPath="$PROJECT_DIR$/start.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,16 +100,5 @@
       <updated>1731362699677</updated>
     </task>
     <servers />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/model/Seat.py</url>
-          <line>18</line>
-          <option name="timeStamp" value="19" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

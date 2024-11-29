@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from model.Seat import Seat
+from view.colors import RED, RESET
 
 
 class Jarat(ABC):
@@ -20,15 +21,15 @@ class Jarat(ABC):
 
     @abstractmethod
     def list_seats(self, user_seats: [str]):
-        ...
+        pass
 
     @abstractmethod
     def book_seat(self, number: int):
-        ...
+        pass
 
     @abstractmethod
     def cancel_seat(self, number: int):
-        ...
+        pass
 
     @property
     def type(self):
@@ -53,6 +54,12 @@ class Jarat(ABC):
     @property
     def arrival(self):
         return self._arrival
+
+    @property
+    def is_bookable(self):
+        now = datetime.now()
+        departure = datetime.strptime(self._departure, "%Y.%m.%d. %H:%M")
+        return departure - now > timedelta(minutes=0)
 
     @property
     def flight_duration(self):
@@ -84,8 +91,8 @@ class Jarat(ABC):
         index = number - 1
         try:
             return self._seats[index]
-        except Exception:
-            print("Hiba! " + str(number) + " számú ülés nem létezik.")
+        except ValueError:
+            return f"{RED}Hiba!{RESET} {number} {RED}számú ülés nem létezik.{RESET}"
 
     def _init_seats(self):
         seats: list[Seat] = []
